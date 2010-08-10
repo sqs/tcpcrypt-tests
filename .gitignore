@@ -1,2 +1,5 @@
 vm.pid
 *-disk
+*.pid
+*.vdi
+
