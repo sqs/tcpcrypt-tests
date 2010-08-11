@@ -26,4 +26,11 @@ ssh: vm
 test: vm
 	$(SCP) -r $(TCPCRYPT) $(PLATFORM)-install.sh root@localhost:
 	$(SSH) sh $(PLATFORM)-install.sh
-	kill `cat vm.pid`
+#	kill `cat vm.pid`
+
+#OSXHOST=192.168.64.128
+OSXHOST=scs-sqs2
+OSXUSER=sqs
+test-osx:
+	rsync -av -e "ssh $(SSH_AUTH_OPTS)" $(TCPCRYPT) macosx-106-i386-install.sh $(OSXUSER)@$(OSXHOST):tcpcrypt/
+	ssh $(SSH_AUTH_OPTS) $(OSXUSER)@$(OSXHOST) sh tcpcrypt/macosx-106-i386-install.sh
