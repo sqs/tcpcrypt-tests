@@ -13,9 +13,15 @@ gmake install
 ./launch_tcpcryptd.sh &
 sleep 1.5
 
+echo Testing tcpcrypt connection to tcpcrypt.org:80...
 test/tcpcrypt -t 0 171.66.3.211 80
 R=$?
 
-killall tcpcryptd
+echo Testing tcpcrypt connection on localhost:7777...
+test/tcpcrypt -v -l 127.0.0.1 7777 &
+test/tcpcrypt -v 127.0.0.1 7777
+R=$?
+
+killall tcpcryptd tcpcrypt
 
 return $R
