@@ -6,7 +6,11 @@ make
 make install
 
 ./launch_tcpcryptd.sh &
-sleep 0.5
+sleep 1.5
+
+echo Testing tcpcrypt connection to tcpcrypt.org:80...
+echo | test/tcpcrypt 171.66.3.211 80
+R=$?
 
 test/tcpcrypt -v -l 127.0.0.1 7777 > server.log &
 sleep 0.3

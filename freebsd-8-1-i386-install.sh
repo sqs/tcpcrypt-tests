@@ -14,7 +14,7 @@ gmake install
 sleep 1.5
 
 echo Testing tcpcrypt connection to tcpcrypt.org:80...
-test/tcpcrypt -t 0 171.66.3.211 80
+echo | test/tcpcrypt -vv 171.66.3.211 80
 R=$?
 
 echo Testing tcpcrypt connection on localhost:7777...
