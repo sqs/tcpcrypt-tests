@@ -4,9 +4,9 @@ VM_DISK = $(PLATFORM)-disk
 PID_FILE = vm-$(PLATFORM).pid
 SNAPSHOT = -snapshot
 SSH_PORT ?= 5022
-QEMU_OPTS = -m 384 -net user -net nic,model=rtl8139    \
+QEMU_OPTS += -m 256 -net user -net nic,model=rtl8139    \
             -redir tcp:$(SSH_PORT)::22 -localtime $(SNAPSHOT) \
-	    -daemonize -pidfile $(PID_FILE)
+	    -daemonize -pidfile $(PID_FILE) $(NO_GFX)
 
 ifeq ($(PLATFORM), winxp-sp3-i386)
 	SSH_USER = tcpcrypt
@@ -30,8 +30,8 @@ ssh: vm
 	$(SSH)
 
 test: vm
-	$(SCP) -r $(TCPCRYPT) $(PLATFORM)-install.sh root@localhost:
-	$(SSH) sh $(PLATFORM)-install.sh
+	rsync -av -e "ssh $(SSH_AUTH_OPTS) -p $(SSH_PORT)" $(TCPCRYPT) $(PLATFORM)-install.sh $(SSH_USER)@localhost:tcpcrypt/
+	$(SSH) sh tcpcrypt/$(PLATFORM)-install.sh
 #	kill `cat vm.pid`
 
 #OSXHOST=192.168.64.128
