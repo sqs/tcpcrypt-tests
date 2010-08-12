@@ -7,10 +7,15 @@
 cd /usr/ports/security/openssl && make && make install
 
 cd /root/tcpcrypt/user
-gmake clean && gmake
+gmake
+gmake install
 
-ipfw 01 add divert 666 tcp from 127.0.0.1/32 to 127.0.0.1/32
+./launch_tcpcryptd.sh &
+sleep 0.5
 
-tcpcrypt/tcpcryptd -v &
-sleep 2
-LD_LIBRARY_PATH=`pwd`/lib test/tcpcrypt -v -t 0
+test/tcpcrypt -t 0 171.66.3.211 80
+R=$?
+
+killall tcpcryptd
+
+return $?
