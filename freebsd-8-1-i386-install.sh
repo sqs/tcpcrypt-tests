@@ -18,4 +18,4 @@ R=$?
 
 killall tcpcryptd
 
-return $?
+return $R
