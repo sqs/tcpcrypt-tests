@@ -34,14 +34,3 @@ test: vm
 	rsync -av -e "ssh $(SSH_AUTH_OPTS) -p $(SSH_PORT)" $(TCPCRYPT) $(PLATFORM)-install.sh $(SSH_USER)@$(SSH_HOST):tcpcrypt/
 	$(SSH) sh tcpcrypt/$(PLATFORM)-install.sh
 #	kill `cat vm.pid`
-
-#OSXHOST=192.168.64.128
-OSXHOST=scs-sqs2
-OSXUSER=sqs
-test-osx:
-	rsync -av -e "ssh $(SSH_AUTH_OPTS)" $(TCPCRYPT) macosx-106-i386-install.sh $(OSXUSER)@$(OSXHOST):tcpcrypt/
-	ssh $(SSH_AUTH_OPTS) $(OSXUSER)@$(OSXHOST) sh tcpcrypt/macosx-106-i386-install.sh
-
-test-winxp:
-	rsync -av -e "ssh $(SSH_AUTH_OPTS) -p $(SSH_PORT)" $(TCPCRYPT) $(PLATFORM)-install.sh $(SSH_USER)@localhost:tcpcrypt/
-	$(SSH) sh tcpcrypt/$(PLATFORM)-install.sh
