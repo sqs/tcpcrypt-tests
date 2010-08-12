@@ -11,7 +11,7 @@ gmake
 gmake install
 
 ./launch_tcpcryptd.sh &
-sleep 0.5
+sleep 1.5
 
 test/tcpcrypt -t 0 171.66.3.211 80
 R=$?
