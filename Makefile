@@ -11,9 +11,18 @@ QEMU_OPTS += -m 256 -net user -net nic,model=rtl8139    \
 
 ifeq ($(PLATFORM), winxp-sp3-i386)
 	SSH_USER = tcpcrypt
+	EXE = .exe
 else
 	SSH_USER = root
+	EXE = 
 endif
+
+ifeq ($(PLATFORM), freebsd-81-i386)
+	VM_MAKE = gmake
+else
+	VM_MAKE = make
+endif
+
 SSH_AUTH_OPTS = -i vmkey                       \
                 -oStrictHostKeyChecking=no     \
                 -oUserKnownHostsFile=/dev/null
@@ -30,7 +39,16 @@ vm: $(PID_FILE)
 ssh: vm
 	$(SSH)
 
-test: vm
-	rsync -av -e "ssh $(SSH_AUTH_OPTS) -p $(SSH_PORT)" $(TCPCRYPT) $(PLATFORM)-install.sh $(SSH_USER)@$(SSH_HOST):tcpcrypt/
+test: vm getsrc
 	$(SSH) sh tcpcrypt/$(PLATFORM)-install.sh
-#	kill `cat vm.pid`
+
+getsrc: vm
+	rsync -av -e "ssh $(SSH_AUTH_OPTS) -p $(SSH_PORT)" $(TCPCRYPT) $(PLATFORM)-install.sh $(SSH_USER)@$(SSH_HOST):tcpcrypt/
+
+stop:
+	kill `cat $(PID_FILE)`
+
+static-bin: getsrc
+	mkdir -p bin > /dev/null
+	$(SSH) 'cd tcpcrypt/user && $(VM_MAKE) clean && $(VM_MAKE) STATIC=1'
+	$(SCP) $(SSH_USER)@$(SSH_HOST):tcpcrypt/user/tcpcrypt/tcpcryptd$(EXE) bin/tcpcryptd-$(PLATFORM)$(EXE)
