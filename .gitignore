@@ -3,3 +3,4 @@ vm.pid
 *.pid
 *.vdi
 
+bin/
