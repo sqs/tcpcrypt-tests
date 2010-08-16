@@ -28,7 +28,7 @@ SSH_AUTH_OPTS = -i vmkey                       \
                 -oUserKnownHostsFile=/dev/null
 SSH = ssh $(SSH_AUTH_OPTS) -p $(SSH_PORT) $(SSH_USER)@$(HOST)
 SCP = scp $(SSH_AUTH_OPTS) -P $(SSH_PORT)
-RSYNC = rsync --exclude='*.so' --exclude='*.a' -av -e "ssh $(SSH_AUTH_OPTS) -p $(SSH_PORT)"
+RSYNC = rsync --exclude='*.d' --exclude='*.o' --exclude='*.so' --exclude='*.a' -av -e "ssh $(SSH_AUTH_OPTS) -p $(SSH_PORT)"
 
 $(PID_FILE):
 	/usr/bin/qemu $(QEMU_OPTS) $(VM_DISK)
@@ -73,4 +73,5 @@ test-apache: getsrc buildsrc
 		chmod -R 700 $(REMOTE_WWW_ROOT)"
 	$(SSH) a2ensite test-tcpcrypt-site
 	$(SSH) $(REMOTE_APACHECTL) restart
-	curl http://$(HOST):7777/tcpcrypt.sh
+	$(MOD_TCPCRYPT)/test_mod_tcpcrypt.sh on http://$(HOST):7777/tcpcrypt.sh
+	$(MOD_TCPCRYPT)/test_mod_tcpcrypt.sh off http://$(HOST):7777/tcpcrypt.sh
