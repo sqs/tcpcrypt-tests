@@ -62,7 +62,9 @@ REMOTE_WWW_ROOT = /tmp/mod_tcpcrypt
 REMOTE_APACHECTL = /etc/init.d/apache2
 APACHE_USER = www-data
 APACHE_GROUP = www-data
-test-apache: getsrc buildsrc
+test-apache: getsrc buildsrc apache-mod-install do-test-apache
+
+apache-mod-install:
 	$(MAKE) -C $(MOD_TCPCRYPT) clean
 	$(RSYNC) $(MOD_TCPCRYPT) $(SSH_USER)@$(HOST):
 	$(SSH) 'cd mod_tcpcrypt && make install && a2enmod tcpcrypt'
@@ -71,7 +73,14 @@ test-apache: getsrc buildsrc
 	$(SCP) $(MOD_TCPCRYPT)/test/tcpcrypt.sh $(SSH_USER)@$(HOST):$(REMOTE_WWW_ROOT)
 	$(SSH) "chown -R $(APACHE_USER):$(APACHE_GROUP) $(REMOTE_WWW_ROOT) && \
 		chmod -R 700 $(REMOTE_WWW_ROOT)"
-	$(SSH) a2ensite test-tcpcrypt-site
+	$(SSH) 'a2dissite default && a2ensite test-tcpcrypt-site'
 	$(SSH) $(REMOTE_APACHECTL) restart
-	$(MOD_TCPCRYPT)/test_mod_tcpcrypt.sh on http://$(HOST):7777/tcpcrypt.sh
-	$(MOD_TCPCRYPT)/test_mod_tcpcrypt.sh off http://$(HOST):7777/tcpcrypt.sh
+
+do-test-apache:
+#	sudo $(TCPCRYPT)/user/launch_tcpcryptd.sh &
+	echo Need to have tcpcryptd running on server and set up for http server...
+	sleep 1
+	$(MOD_TCPCRYPT)/test/test_mod_tcpcrypt.sh on http://$(HOST):80/tcpcrypt.sh
+	sudo killall tcpcryptd
+	sleep 1
+	$(MOD_TCPCRYPT)/test/test_mod_tcpcrypt.sh off http://$(HOST):80/tcpcrypt.sh
